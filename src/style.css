@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
+@layer utilities{
+    .tbItem{
+        @apply w-11 h-11 box-border border-2 border-black text-lg font-bold flex justify-center items-center
+    }
+}

@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  math-exam:
+    container_name: math-exam
+    image: "nginx:1.22-alpine"
+    volumes:
+      - ./dist:/usr/share/nginx/html:ro
+    ports:
+      - 10002:80
+    restart: always
