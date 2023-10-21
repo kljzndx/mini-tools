@@ -1,0 +1,19 @@
+﻿<Window x:Class="DigitalClockWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DigitalClockWpf"
+        mc:Ignorable="d"
+        Height="40" Width="150" Title="" ShowInTaskbar="False"
+        WindowStartupLocation="Manual" WindowStyle="None" WindowState="Normal" ResizeMode="NoResize" Background="Transparent"
+        Loaded="Window_Loaded">
+    
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="-1" CaptionHeight="0"/>
+    </WindowChrome.WindowChrome>
+    
+    <Border Background="Transparent">
+        <TextBlock x:Name="Time_TextBlock" Text="22:33:44" FontSize="36" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+    </Border>
+</Window>
