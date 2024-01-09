@@ -1,8 +1,12 @@
-﻿using System.Diagnostics;
-using System.Linq;
+﻿using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+
+using SkiaSharp;
+
+using System.Diagnostics;
 using System.Text;
 
-using static System.Net.WebRequestMethods;
+using File = System.IO.File;
 
 namespace RenJiaoBookDownloader
 {
@@ -16,8 +20,6 @@ namespace RenJiaoBookDownloader
         const string Cf_totalPageCount = "totalPageCount";
         const string Cf_CreatedTime = "CreatedTime";
         const string Cf_largePath = "largePath";
-        const string Cf_largePageWidth = "largePageWidth";
-        const string Cf_largePageHeight = "largePageHeight";
 
         static HttpClient Http;
 
@@ -29,6 +31,8 @@ namespace RenJiaoBookDownloader
 
         static async Task Main(string[] args)
         {
+            QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
             Console.Title = "人教版教材下载器";
             Console.WriteLine("人教版教材下载器 v1.0.0");
 
@@ -37,6 +41,7 @@ namespace RenJiaoBookDownloader
             if (string.IsNullOrEmpty(address))
                 Process.Start(new ProcessStartInfo("https://jc.pep.com.cn/") { UseShellExecute = true });
 
+            Dictionary<string, string> cfs = new Dictionary<string, string>();
             if (address.StartsWith(Host) && address.EndsWith(IndexPage))
             {
                 Http.DefaultRequestHeaders.Referrer = new Uri(address);
@@ -44,13 +49,23 @@ namespace RenJiaoBookDownloader
 
                 try
                 {
-                    await ParseConfig(address);
+                    cfs = await ParseConfig(address);
                 }
                 catch (Exception)
                 {
+                    return;
                 }
             }
 
+            var imgsData = await GetImageData(address + cfs[Cf_largePath], int.Parse(cfs[Cf_totalPageCount]), cfs[Cf_CreatedTime]);
+
+            string filesDir = Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, $"files/")).FullName;
+            string savePath = Path.Combine(filesDir, $"{cfs[Cf_bookTitle]}.pdf");
+
+            await SavePdf(savePath, imgsData);
+            Console.WriteLine($"已保存至：{savePath}");
+
+            Console.WriteLine();
             Console.WriteLine("按下回车键即可退出……");
             Console.ReadLine();
         }
@@ -64,13 +79,10 @@ namespace RenJiaoBookDownloader
                 Cf_bookTitle,
                 Cf_totalPageCount,
                 Cf_CreatedTime,
-
                 Cf_largePath,
-                Cf_largePageWidth,
-                Cf_largePageHeight,
             };
 
-            Console.Write("正在获取书籍配置文件...");
+            Console.Write("正在获取书籍信息...");
             string js = "";
 
             try
@@ -113,5 +125,49 @@ namespace RenJiaoBookDownloader
 
             return dc;
         }
+
+        static async Task<List<byte[]>> GetImageData(string dirUrl, int pageCount, string createdTime)
+        {
+            Console.Write("正在下载 ");
+            List<byte[]> data = new List<byte[]>();
+
+            for (int i = 1; i < pageCount + 1; i++)
+            {
+                Console.SetCursorPosition(9, Console.CursorTop);
+                Console.Write($"({i}/{pageCount})");
+
+                data.Add(await Http.GetByteArrayAsync($"{dirUrl}{i}.jpg?{createdTime}"));
+                await Task.Delay(100);
+            }
+
+            Console.WriteLine();
+            return data;
+        }
+
+        static async Task SavePdf(string path, List<byte[]> images)
+        {
+            Console.WriteLine("正在生成PDF...");
+            var firstImage = SKBitmap.Decode(images.First());
+            var width = firstImage.Width;
+            var height = firstImage.Height;
+
+            var data = Document.Create(d =>
+            {
+                foreach (var image in images)
+                {
+                    d.Page(p =>
+                    {
+                        p.Size(new PageSize(width, height));
+                        p.Margin(0);
+
+                        p.Content().Image(image).UseOriginalImage();
+                        p.PageColor(Colors.White);
+                    });
+                }
+            }).GeneratePdf();
+            
+            await File.WriteAllBytesAsync(path, data);
+        }
+
     }
 }
