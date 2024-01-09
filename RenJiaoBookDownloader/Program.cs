@@ -34,36 +34,51 @@ namespace RenJiaoBookDownloader
             QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
             Console.Title = "人教版教材下载器";
-            Console.WriteLine("人教版教材下载器 v1.0.0");
 
-            Console.Write("请输入书籍预览页面地址（留空则会打开书籍目录）：");
-            string address = Console.ReadLine() ?? string.Empty;
-            if (string.IsNullOrEmpty(address))
-                Process.Start(new ProcessStartInfo("https://jc.pep.com.cn/") { UseShellExecute = true });
-
-            Dictionary<string, string> cfs = new Dictionary<string, string>();
-            if (address.StartsWith(Host) && address.EndsWith(IndexPage))
+            while (true)
             {
-                Http.DefaultRequestHeaders.Referrer = new Uri(address);
-                address = address.Replace(IndexPage, string.Empty);
+                Console.Out.Flush();
 
-                try
+                Console.WriteLine("人教版教材下载器 v1.0.0");
+
+                Console.Write("请输入书籍预览页面地址（留空则会打开书籍目录）：");
+                string address = Console.ReadLine() ?? string.Empty;
+                if (string.IsNullOrEmpty(address))
                 {
-                    cfs = await ParseConfig(address);
+                    Process.Start(new ProcessStartInfo("https://jc.pep.com.cn/") { UseShellExecute = true });
+                    continue;
                 }
-                catch (Exception)
+
+                Dictionary<string, string> cfs = new Dictionary<string, string>();
+                if (address.StartsWith(Host) && address.EndsWith(IndexPage))
                 {
-                    return;
+                    Http.DefaultRequestHeaders.Referrer = new Uri(address);
+                    address = address.Replace(IndexPage, string.Empty);
+
+                    try
+                    {
+                        cfs = await ParseConfig(address);
+                    }
+                    catch (Exception)
+                    {
+                        break;
+                    }
                 }
+
+                var imgsData = await GetImageData(address + cfs[Cf_largePath], int.Parse(cfs[Cf_totalPageCount]), cfs[Cf_CreatedTime]);
+
+                string filesDir = Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, $"files/")).FullName;
+                string savePath = Path.Combine(filesDir, $"{cfs[Cf_bookTitle]}.pdf");
+
+                await SavePdf(savePath, imgsData);
+                Console.WriteLine($"已保存至：{savePath}");
+
+                Console.WriteLine();
+                Console.WriteLine("是否需要继续下载另一本书？ (yes/No)");
+                string exitMess = (Console.ReadLine() ?? string.Empty).ToLower();
+                if (exitMess != "yes")
+                    break;
             }
-
-            var imgsData = await GetImageData(address + cfs[Cf_largePath], int.Parse(cfs[Cf_totalPageCount]), cfs[Cf_CreatedTime]);
-
-            string filesDir = Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, $"files/")).FullName;
-            string savePath = Path.Combine(filesDir, $"{cfs[Cf_bookTitle]}.pdf");
-
-            await SavePdf(savePath, imgsData);
-            Console.WriteLine($"已保存至：{savePath}");
 
             Console.WriteLine();
             Console.WriteLine("按下回车键即可退出……");
