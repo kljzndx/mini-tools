@@ -72,6 +72,7 @@ namespace ShutdownTimer.Services
         private void Shutdown()
         {
             Process process = new Process();
+            process.StartInfo.UseShellExecute = true;
             process.StartInfo.FileName = "shutdown";
             process.StartInfo.Arguments = "-s -t 60";
             process.Start();
@@ -80,6 +81,7 @@ namespace ShutdownTimer.Services
         private void CancelShutdown()
         {
             Process process = new Process();
+            process.StartInfo.UseShellExecute = true;
             process.StartInfo.FileName = "shutdown";
             process.StartInfo.Arguments = "-a";
             process.Start();
