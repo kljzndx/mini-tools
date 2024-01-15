@@ -57,6 +57,9 @@ namespace ShutdownTimer.Services
             if (_timer == null)
                 return;
 
+            if (!_timer.IsEnabled)
+                CancelShutdown();
+
             _timer.Stop();
             _timer.Tick -= Timer_Tick;
             _timer = null;
@@ -71,6 +74,14 @@ namespace ShutdownTimer.Services
             Process process = new Process();
             process.StartInfo.FileName = "shutdown";
             process.StartInfo.Arguments = "-s -t 60";
+            process.Start();
+        }
+
+        private void CancelShutdown()
+        {
+            Process process = new Process();
+            process.StartInfo.FileName = "shutdown";
+            process.StartInfo.Arguments = "-a";
             process.Start();
         }
 
