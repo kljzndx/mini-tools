@@ -37,9 +37,9 @@ namespace RenJiaoBookDownloader
 
             while (true)
             {
-                Console.Out.Flush();
+                Console.Clear();
 
-                Console.WriteLine("人教版教材下载器 v1.0.0");
+                Console.WriteLine("人教版教材下载器 v1.1.0");
 
                 Console.Write("请输入书籍预览页面地址（留空则会打开书籍目录）：");
                 string address = Console.ReadLine() ?? string.Empty;
