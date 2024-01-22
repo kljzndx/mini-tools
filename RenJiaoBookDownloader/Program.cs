@@ -72,6 +72,7 @@ namespace RenJiaoBookDownloader
 
                 await SavePdf(savePath, imgsData);
                 Console.WriteLine($"已保存至：{savePath}");
+                Console.Beep();
 
                 Console.WriteLine();
                 Console.WriteLine("是否需要继续下载另一本书？ (yes/No)");
