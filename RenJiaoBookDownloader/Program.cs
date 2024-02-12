@@ -75,14 +75,14 @@ namespace RenJiaoBookDownloader
                 Console.Beep();
 
                 Console.WriteLine();
-                Console.WriteLine("是否需要继续下载另一本书？ (Yes/no)");
+                Console.WriteLine("是否需要继续下载另一本书？ (YES/no)");
                 string exitMess = (Console.ReadLine() ?? string.Empty).ToLower();
                 if (exitMess == "no")
                     break;
             }
 
             Console.WriteLine();
-            Console.WriteLine("按下回车键即可退出……");
+            Console.WriteLine("再次按下回车键即可退出……");
             Console.ReadLine();
         }
 
