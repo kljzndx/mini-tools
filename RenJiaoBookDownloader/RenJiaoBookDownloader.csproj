@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <ApplicationIcon>logo.ico</ApplicationIcon>
+    <AssemblyTitle>人教书籍下载器</AssemblyTitle>
+    <AssemblyVersion>1.1.1</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
