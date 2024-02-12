@@ -9,6 +9,12 @@
     <AssemblyTitle>人教书籍下载器</AssemblyTitle>
     <AssemblyVersion>1.1.1</AssemblyVersion>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Include="../LICENSE">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="QuestPDF" Version="2023.12.2" />
