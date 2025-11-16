@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 
+using H.NotifyIcon;
+
 using Microsoft.Extensions.DependencyInjection;
 
 using ShutdownTimer.Services;
@@ -30,7 +32,7 @@ namespace ShutdownTimer
             sc.AddSingleton<TaskIconViewModel>();
             Ioc.Default.ConfigureServices(sc.BuildServiceProvider());
 
-            FindResource("TaskIcon");
+            ((TaskbarIcon)FindResource("TaskIcon")).ForceCreate();
         }
     }
 }
